@@ -11,159 +11,284 @@ body {
   background: #0a0a0f;
   color: #e4e4e7;
   font-family: 'Courier New', monospace;
-  padding: 20px;
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
 }
 
-.container {
-  max-width: 900px;
-  margin: 0 auto;
+/* Sidebar z kodem */
+.sidebar {
+  width: 350px;
+  background: #0d0d12;
+  border-right: 2px solid #222;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
+.sidebar-header {
+  padding: 15px;
+  border-bottom: 1px solid #333;
+  background: #0a0a0f;
+}
+
+.sidebar-header h3 {
+  color: #8b5cf6;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.code-preview {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.code-preview pre {
+  background: #000;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-bottom: 10px;
+}
+
+.code-preview code {
+  color: #22c55e;
+  font-family: 'Consolas', monospace;
+}
+
+.code-item {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.code-item:last-child {
+  border-bottom: none;
+}
+
+.code-label {
+  color: #666;
+  font-size: 11px;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
 header {
+  padding: 15px 25px;
   border-bottom: 2px solid #7c3aed;
-  padding-bottom: 20px;
-  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0d0d12;
 }
 
 h1 {
   color: #8b5cf6;
-  font-size: 2.5em;
-  letter-spacing: 3px;
-  margin-bottom: 5px;
+  font-size: 1.8em;
+  letter-spacing: 2px;
 }
 
-.subtitle {
-  color: #666;
-  font-size: 13px;
-  letter-spacing: 1px;
+.header-right {
+  display: flex;
+  gap: 15px;
+  align-items: center;
 }
 
 .status {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 5px 12px;
-  background: #1a1a2e;
-  border: 1px solid #333;
-  border-radius: 4px;
   font-size: 12px;
+  color: #22c55e;
 }
 
-.status.active { color: #22c55e; }
-.status.thinking { color: #eab308; }
-.status.error { color: #ef4444; }
+.rules-btn {
+  background: #1a1a2e;
+  border: 1px solid #333;
+  color: #888;
+  padding: 6px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: inherit;
+  transition: all 0.2s;
+}
 
-.input-area {
+.rules-btn:hover {
+  color: #8b5cf6;
+  border-color: #8b5cf6;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.active {
   display: flex;
-  gap: 10px;
+}
+
+.modal-content {
+  background: #0d0d12;
+  border: 2px solid #7c3aed;
+  padding: 30px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.modal-content h2 {
+  color: #8b5cf6;
   margin-bottom: 20px;
 }
 
-#query {
-  flex: 1;
-  background: #16161d;
-  border: 1px solid #333;
-  color: #e4e4e7;
-  padding: 15px;
-  font-family: 'Courier New', monospace;
-  font-size: 15px;
-  border-radius: 6px;
-  outline: none;
-  transition: border-color 0.2s;
+.modal-content p {
+  margin: 15px 0;
+  line-height: 1.6;
+  color: #aaa;
 }
 
-#query:focus {
-  border-color: #7c3aed;
+.modal-content ul {
+  margin: 10px 0 10px 20px;
+  color: #aaa;
 }
 
-#send {
+.modal-content li {
+  margin: 8px 0;
+}
+
+.close-modal {
   background: #7c3aed;
   border: none;
   color: white;
-  padding: 15px 30px;
-  font-family: 'Courier New', monospace;
-  font-size: 15px;
+  padding: 10px 25px;
+  margin-top: 20px;
   cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s;
-  font-weight: bold;
+  font-family: inherit;
+  border-radius: 4px;
+  float: right;
 }
 
-#send:hover {
+.close-modal:hover {
   background: #6d28d9;
-  transform: translateY(-2px);
 }
 
-#send:disabled {
-  background: #333;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.chat-container {
-  background: #0f0f14;
-  border: 1px solid #222;
-  border-radius: 8px;
-  padding: 20px;
-  min-height: 400px;
-  max-height: 600px;
+/* Chat */
+#chat {
+  flex: 1;
   overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.message {
-  margin-bottom: 20px;
+.msg {
   padding: 15px;
-  border-radius: 6px;
-  line-height: 1.6;
+  border-radius: 4px;
+  max-width: 85%;
+  line-height: 1.5;
+  position: relative;
 }
 
-.message.user {
+.user {
+  align-self: flex-end;
   background: #1a1a2e;
-  border-left: 3px solid #3b82f6;
+  border-right: 4px solid #3b82f6;
 }
 
-.message.ai {
+.ai {
+  align-self: flex-start;
   background: #0d0d12;
-  border-left: 3px solid #8b5cf6;
+  border-left: 4px solid #8b5cf6;
 }
 
-.message.system {
+.system {
+  align-self: center;
   background: #1a1a1a;
-  border-left: 3px solid #666;
-  font-size: 13px;
+  border: 1px solid #333;
+  max-width: 95%;
+  text-align: center;
   color: #888;
+  font-size: 13px;
 }
 
-.message-header {
+.msg-header {
   font-weight: bold;
   margin-bottom: 8px;
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 1px;
 }
 
-.user .message-header { color: #3b82f6; }
-.ai .message-header { color: #8b5cf6; }
+.user .msg-header { color: #3b82f6; }
+.ai .msg-header { color: #8b5cf6; }
 
-.loading {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #8b5cf6;
-  animation: pulse 1.5s ease-in-out infinite;
+/* Code Blocks */
+.msg pre {
+  background: #000;
+  padding: 15px;
+  border: 1px solid #333;
+  margin: 10px 0;
+  white-space: pre;
+  overflow-x: auto;
+  position: relative;
+  border-radius: 4px;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+.msg code {
+  color: #22c55e;
+  font-family: 'Consolas', monospace;
+  font-size: 13px;
 }
 
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 11px;
+  border-radius: 3px;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  background: #6d28d9;
+}
+
+.copy-btn.copied {
+  background: #22c55e;
+}
+
+/* Tools */
 .tools-used {
   margin-top: 10px;
-  padding: 10px;
-  background: #0a0a0f;
+  padding: 8px;
+  background: #000;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
   color: #666;
 }
 
@@ -174,52 +299,149 @@ h1 {
   border: 1px solid #333;
   border-radius: 3px;
   margin-right: 5px;
-  font-size: 11px;
+  font-size: 10px;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
+/* Input */
+.input-box {
+  padding: 20px;
+  background: #0d0d12;
+  border-top: 1px solid #222;
 }
 
-::-webkit-scrollbar-track {
-  background: #0a0a0f;
+.input-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  gap: 10px;
 }
 
-::-webkit-scrollbar-thumb {
+textarea {
+  flex: 1;
+  background: #16161d;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #fff;
+  padding: 12px;
+  min-height: 50px;
+  max-height: 150px;
+  resize: vertical;
+  font-family: inherit;
+  outline: none;
+  font-size: 14px;
+}
+
+textarea:focus {
+  border-color: #7c3aed;
+}
+
+button#send {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 0 25px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: 0.2s;
+  font-family: inherit;
+}
+
+button#send:hover {
+  background: #6d28d9;
+}
+
+button#send:disabled {
   background: #333;
-  border-radius: 5px;
+  cursor: not-allowed;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0f; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
 </style>
 </head>
 <body>
-<div class="container">
+
+<!-- Sidebar z podglądem kodu -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h3>📋 PODGLĄD KODU</h3>
+  </div>
+  <div class="code-preview" id="code-preview">
+    <div class="code-item">
+      <div class="code-label">System Info</div>
+      <pre><code>VORTEX.AI v1.0
+Model: Claude Sonnet 4
+Status: Aktywny</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
   <header>
     <h1>VORTEX.AI</h1>
-    <div class="subtitle">PRAWDZIWE AI • WYSZUKIWANIE • ANALIZA</div>
-    <div class="status active" id="status">● ONLINE</div>
+    <div class="header-right">
+      <div class="status">● ONLINE • IP: <span id="ip-display">...</span></div>
+      <button class="rules-btn" onclick="toggleRules()">REGULAMIN</button>
+    </div>
   </header>
 
-  <div class="input-area">
-    <input 
-      type="text" 
-      id="query" 
-      placeholder="Wpisz pytanie... (AI używa internetu i myśli samodzielnie)"
-      autocomplete="off"
-    >
-    <button id="send">WYŚLIJ</button>
+  <!-- Modal Regulaminu -->
+  <div class="modal" id="rules-modal">
+    <div class="modal-content">
+      <h2>REGULAMIN VORTEX.AI</h2>
+      
+      <p><strong>§1 Zakres usług</strong></p>
+      <ul>
+        <li>VORTEX.AI to eksperymentalne narzędzie AI z dostępem do internetu</li>
+        <li>System przechowuje historię konwersacji tylko w ramach bieżącej sesji</li>
+        <li>Wszystkie zapytania są logowane na Discord webhook</li>
+      </ul>
+
+      <p><strong>§2 Monitoring i logowanie</strong></p>
+      <ul>
+        <li>Każde zapytanie jest wysyłane na webhook Discord wraz z IP użytkownika</li>
+        <li>Dane są używane wyłącznie do celów bezpieczeństwa</li>
+        <li>Nie przechowujemy danych osobowych poza IP i tekstem zapytań</li>
+      </ul>
+
+      <p><strong>§3 Zakazy</strong></p>
+      <ul>
+        <li>Zabronione jest generowanie treści nielegalnych lub szkodliwych</li>
+        <li>Nie używaj VORTEX do spamu, ataków lub nadużyć API</li>
+        <li>Naruszenie zasad skutkuje zablokowaniem dostępu</li>
+      </ul>
+
+      <p><strong>§4 Odpowiedzialność</strong></p>
+      <ul>
+        <li>VORTEX.AI działa w trybie eksperymentalnym - błędy są możliwe</li>
+        <li>Twórcy nie ponoszą odpowiedzialności za treści generowane przez AI</li>
+        <li>Używasz systemu na własną odpowiedzialność</li>
+      </ul>
+
+      <button class="close-modal" onclick="toggleRules()">ROZUMIEM</button>
+    </div>
   </div>
 
-  <div class="chat-container" id="chat"></div>
+  <div id="chat"></div>
+
+  <div class="input-box">
+    <div class="input-wrapper">
+      <textarea id="query" placeholder="Zadaj pytanie VORTEX..." rows="1"></textarea>
+      <button id="send">WYŚLIJ</button>
+    </div>
+  </div>
 </div>
 
 <script>
 // ===========================================
-// PRAWDZIWE AI - Anthropic Claude API
+// KONFIGURACJA
 // ===========================================
+
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1456448665324617912/GXFBBj95oQav5KkIXoTqXXO8TlWZJ8_pr3EFxIy3HmZxE3m4EWyuD-jQp1pSHHojCcc1";
 
 const SYSTEM_PROMPT = `Jesteś VORTEX.AI - inteligentny asystent analityczny.
 
@@ -230,42 +452,107 @@ CHARAKTER:
 - Cytujesz źródła gdy używasz web search
 - Po polsku, ale nie przesadnie oficjalnie
 
-NARZĘDZIA:
-- Masz dostęp do web_search - używaj gdy potrzeba aktualnych danych
-- Analizujesz źródła i weryfikujesz informacje
-- Jeśli coś jest niepewne, mówisz o tym wprost
-
-NIE JESTEŚ:
-- Chatbotem z gotowymi odpowiedziami
-- Wyszukiwarką Google (ale ją używasz)
-- "Miłym asystentem" - jesteś AI które wykonuje robotę
-
 Odpowiadaj konkretnie. Jeśli pytanie jest głupie, możesz to zauważyć (ale odpowiedz i tak).`;
 
 let conversationHistory = [];
 let isThinking = false;
+let userIP = "Nieznane";
 
 const chat = document.getElementById('chat');
 const queryInput = document.getElementById('query');
 const sendBtn = document.getElementById('send');
-const statusEl = document.getElementById('status');
+const codePreview = document.getElementById('code-preview');
 
 // ===========================================
-// FUNKCJE POMOCNICZE
+// POBIERANIE IP
+// ===========================================
+
+fetch('https://api.ipify.org?format=json')
+  .then(r => r.json())
+  .then(data => {
+    userIP = data.ip;
+    document.getElementById('ip-display').textContent = userIP;
+    updateCodePreview('IP', userIP);
+  })
+  .catch(() => {
+    document.getElementById('ip-display').textContent = 'BŁĄD';
+  });
+
+// ===========================================
+// PODGLĄD KODU
+// ===========================================
+
+function updateCodePreview(label, content) {
+  const item = document.createElement('div');
+  item.className = 'code-item';
+  item.innerHTML = `
+    <div class="code-label">${label}</div>
+    <pre><code>${escapeHtml(content)}</code></pre>
+  `;
+  codePreview.appendChild(item);
+  codePreview.scrollTop = codePreview.scrollHeight;
+}
+
+// ===========================================
+// REGULAMIN
+// ===========================================
+
+function toggleRules() {
+  const modal = document.getElementById('rules-modal');
+  modal.classList.toggle('active');
+}
+
+// ===========================================
+// DISCORD WEBHOOK (bez CORS)
+// ===========================================
+
+async function logToDiscord(userMsg, aiMsg) {
+  const payload = {
+    embeds: [{
+      title: "📡 VORTEX MONITORING",
+      color: 8345855,
+      fields: [
+        { name: "👤 UŻYTKOWNIK", value: `IP: \`${userIP}\`\n${userMsg.substring(0, 1000)}`, inline: false },
+        { name: "🤖 VORTEX", value: aiMsg.substring(0, 1000), inline: false },
+        { name: "⏰ CZAS", value: new Date().toLocaleString('pl-PL'), inline: true }
+      ],
+      footer: { text: "VORTEX.AI System" },
+      timestamp: new Date().toISOString()
+    }]
+  };
+
+  try {
+    // Używamy no-cors mode żeby uniknąć błędów CORS
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    updateCodePreview('Discord Log', 'Wysłano: ' + new Date().toLocaleTimeString());
+  } catch (err) {
+    console.error('Webhook error:', err);
+    updateCodePreview('Discord Error', err.message);
+  }
+}
+
+// ===========================================
+// FUNKCJE WIADOMOŚCI
 // ===========================================
 
 function addMessage(role, content, tools = []) {
   const msg = document.createElement('div');
-  msg.className = `message ${role}`;
+  msg.className = `msg ${role}`;
   
-  const header = document.createElement('div');
-  header.className = 'message-header';
-  header.textContent = role === 'user' ? 'TY' : role === 'ai' ? 'VORTEX' : 'SYSTEM';
+  if (role !== 'system') {
+    const header = document.createElement('div');
+    header.className = 'msg-header';
+    header.textContent = role === 'user' ? 'TY' : 'VORTEX';
+    msg.appendChild(header);
+  }
   
   const body = document.createElement('div');
-  body.textContent = content;
-  
-  msg.appendChild(header);
+  body.innerHTML = parseMarkdown(content);
   msg.appendChild(body);
   
   if (tools.length > 0) {
@@ -278,17 +565,51 @@ function addMessage(role, content, tools = []) {
   
   chat.appendChild(msg);
   chat.scrollTop = chat.scrollHeight;
+  
+  // Przyciski kopiowania
+  msg.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'KOPIUJ';
+    btn.onclick = () => copyCode(btn, pre);
+    pre.appendChild(btn);
+  });
 }
 
-function setStatus(text, className) {
-  statusEl.textContent = `● ${text}`;
-  statusEl.className = `status ${className}`;
+function parseMarkdown(text) {
+  text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+    return `<pre><code>${escapeHtml(code.trim())}</code></pre>`;
+  });
+  
+  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  text = text.replace(/\n/g, '<br>');
+  
+  return text;
 }
 
-function setThinking(thinking) {
-  isThinking = thinking;
-  sendBtn.disabled = thinking;
-  sendBtn.textContent = thinking ? 'MYŚLĘ...' : 'WYŚLIJ';
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+function copyCode(btn, pre) {
+  const code = pre.querySelector('code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '✓ SKOPIOWANO';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'KOPIUJ';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
 }
 
 // ===========================================
@@ -301,36 +622,41 @@ async function askVortex(userMessage) {
   addMessage('user', userMessage);
   conversationHistory.push({ role: 'user', content: userMessage });
   
-  setThinking(true);
-  setStatus('ANALIZUJE', 'thinking');
+  updateCodePreview('User Query', userMessage);
+  
+  isThinking = true;
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'MYŚLĘ...';
   
   try {
+    updateCodePreview('API Call', 'Wysyłanie do Claude API...');
+    
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4000,
         system: SYSTEM_PROMPT,
         messages: conversationHistory,
-        tools: [
-          {
-            type: 'web_search_20250305',
-            name: 'web_search'
-          }
-        ]
+        tools: [{
+          type: 'web_search_20250305',
+          name: 'web_search'
+        }]
       })
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`API Error ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
+    updateCodePreview('API Response', JSON.stringify(data, null, 2).substring(0, 500) + '...');
     
-    // Sprawdź czy AI użyło narzędzi
     const usedTools = [];
     let fullText = '';
     
@@ -345,18 +671,21 @@ async function askVortex(userMessage) {
     if (fullText) {
       addMessage('ai', fullText, usedTools);
       conversationHistory.push({ role: 'assistant', content: data.content });
-      setStatus('ONLINE', 'active');
+      
+      // Logowanie na Discord
+      logToDiscord(userMessage, fullText);
     } else {
-      addMessage('system', 'AI nie zwróciło odpowiedzi tekstowej.');
-      setStatus('BŁĄD', 'error');
+      addMessage('system', 'AI nie zwróciło odpowiedzi.');
     }
     
   } catch (error) {
     console.error('Error:', error);
-    addMessage('system', `BŁĄD: ${error.message}\n\nCzy to może być problem z API? Sprawdź konsolę.`);
-    setStatus('BŁĄD', 'error');
+    addMessage('system', `BŁĄD: ${error.message}`);
+    updateCodePreview('Error', error.message);
   } finally {
-    setThinking(false);
+    isThinking = false;
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'WYŚLIJ';
   }
 }
 
@@ -372,8 +701,9 @@ sendBtn.addEventListener('click', () => {
   }
 });
 
-queryInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && !isThinking) {
+queryInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && !isThinking) {
+    e.preventDefault();
     const msg = queryInput.value;
     if (msg) {
       queryInput.value = '';
@@ -382,11 +712,16 @@ queryInput.addEventListener('keypress', (e) => {
   }
 });
 
+queryInput.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+});
+
 // ===========================================
 // STARTUP
 // ===========================================
 
-addMessage('system', 'VORTEX.AI uruchomiony. To prawdziwe AI z dostępem do internetu.\n\nMogę:\n• Wyszukiwać aktualne informacje\n• Analizować złożone pytania\n• Pamiętać kontekst rozmowy\n\nNie jestem zaprogramowany z góry - każda odpowiedź jest generowana na żywo przez Claude API.');
+addMessage('system', 'VORTEX.AI uruchomiony • Prawdziwe AI z dostępem do internetu • Wszystkie rozmowy są monitorowane');
 
 queryInput.focus();
 </script>
